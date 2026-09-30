@@ -1,0 +1,111 @@
+# Telegram Panel Link Extractor
+
+Telegram Scraper & Listener berbasis **Python (Telethon)** untuk mengekstrak link panel secara otomatis dari channel / grup Telegram (seperti **FirexPanel** dan **AnneBellaPanel**), termasuk link yang tersembunyi di dalam tag spoiler, blockquote, maupun teks biasa tanpa format.
+
+---
+
+## 🚀 Fitur Utama
+
+- **Multi-Channel Targeted Scraper**:
+  - Mengekstrak riwayat pesan dari channel / grup target spesifik.
+  - Mendukung grup privat (via link undangan `https://t.me/+...`) maupun channel publik (seperti `@annebellapanel`).
+- **Ekstraksi Cerdas & Mendalam**:
+  - Mengambil link dari format teks biasa (*unformatted plaintext*).
+  - Mengambil link dari teks tersembunyi (*spoiler formatting*).
+  - Mengambil link dari *blockquote* dan *hyperlink entities*.
+- **Normalisasi URL Otomatis**:
+  - Memastikan seluruh link diawali dengan protokol `https://`.
+  - Memfilter dan membuang link kosong / tidak aktif (hanya mengambil link dengan path/parameter aktif).
+- **Validasi Anti-Duplikat Ketat (Deduplikasi)**:
+  - Link yang sudah ada di file output tidak akan pernah dimasukkan ulang.
+  - Output diurutkan secara alfabetis (A-Z).
+- **Keamanan Akun Berlapis (Anti-Ban & Anti-Flood)**:
+  - Penyamaran identitas resmi Telegram Desktop Windows 10.
+  - Pacing / jeda aman saat memindai pesan untuk menghindari pembatasan Telegram.
+  - Pencadangan sesi otomatis dalam bentuk file `.session` dan portable `StringSession`.
+
+---
+
+## 📋 Persyaratan
+
+- **Python 3.8+**
+- **Kredensial Telegram API** (`API_ID` & `API_HASH` dari [my.telegram.org](https://my.telegram.org)).
+
+---
+
+## 🛠️ Langkah Instalasi
+
+1. **Clone repository ini**:
+   ```bash
+   git clone https://github.com/username-anda/panel-link-extractor.git
+   cd panel-link-extractor
+   ```
+
+2. **Buat dan aktifkan Virtual Environment**:
+   ```powershell
+   python -m venv venv
+   .\venv\Scripts\activate
+   ```
+
+3. **Install dependensi**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Konfigurasi file `.env`**:
+   Salin `.env.example` menjadi `.env`:
+   ```bash
+   copy .env.example .env
+   ```
+   Buka file `.env` lalu masukkan `API_ID` dan `API_HASH` Anda.
+
+---
+
+## 💻 Cara Menjalankan
+
+Jalankan script menggunakan terminal:
+```powershell
+.\venv\Scripts\python main.py
+```
+*(atau klik dua kali file `start.bat` di Windows)*
+
+### Pilihan Menu:
+```text
+Pilih Target Ekstraksi:
+  1. Semua Target (FirexPanel + @annebellapanel) (Default)
+  2. Hanya Channel @annebellapanel
+  3. Hanya Grup FirexPanel
+```
+
+---
+
+## 📁 Format Output
+
+### 1. `extracted_links.txt`
+Format bersih **1 link per baris** (terurut rapi A-Z):
+```text
+https://annebellapanel.vercel.app/?m=W3sidXJsIjoiaHR0cHM6Ly...
+https://annebellapanel.vercel.app/?s=aHR0cHM6Ly93aGl0aGV4...
+https://firexpanel.com/?s=aHR0cHM6Ly9jYWxsbWV2aWxsZW4x...
+https://firexpanel.com/?s=aHR0cHM6Ly9yYW1hLWViOGNjLWRl...
+```
+
+### 2. `extracted_links.json`
+Menyimpan riwayat lengkap beserta metadata pesan (ID pesan, tanggal, nama grup, dan potongan teks):
+```json
+[
+  {
+    "url": "https://firexpanel.com/?s=aHR0cHM6Ly...",
+    "chat_id": -1004324276248,
+    "chat_title": "PANNEL LOOTERSS { BACKUP }",
+    "message_id": 69,
+    "timestamp": "2026-09-30 07:16:33",
+    "snippet": "https://firexpanel.com/?s=..."
+  }
+]
+```
+
+---
+
+## 🔒 Keamanan & Kerahasiaan Sesi
+File sesi Telegram (`.session`), cadangan sesi (`session_backup.txt`, `backups/`), dan data `.env` **sudah otomatis diabaikan di `.gitignore`** sehingga aman dari kebocoran saat di-push ke GitHub.

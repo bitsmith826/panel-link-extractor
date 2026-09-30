@@ -1,0 +1,25 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Telegram Sessions, Keys & Backups (CRITICAL SECRETS)
+*.session
+*.session-journal
+.env
+session_backup.txt
+backups/
+qr_login.png
+*.png
+
+# Output files
+extracted_links.json
+extracted_links.txt
+
+# Python cache & temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.vscode/
+.idea/
