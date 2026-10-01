@@ -28,6 +28,7 @@ if sys.platform.startswith("win"):
 import config
 import storage
 from extractor import extract_links_from_message
+import panel_generator
 
 console = Console()
 
@@ -234,8 +235,28 @@ async def scrape_target(client: TelegramClient, target_info: dict, existing_urls
 
 async def main():
     console.clear()
-    validate_credentials()
     existing_urls = storage.load_existing_urls()
+    print_banner(total_saved=len(existing_urls))
+
+    # Menu Utama
+    console.print("[bold cyan]PILIH MENU UTAMA:[/bold cyan]")
+    console.print("  [bold green]1.[/bold green] [bold]Ekstrak Link Panel dari Telegram[/bold] (Scraper & Listener)")
+    console.print("  [bold green]2.[/bold green] [bold]Buat / Generate Link Web Panel[/bold] (dari File DB/Key atau Manual)")
+    console.print("  [bold red]0.[/bold red] Keluar\n")
+
+    main_choice = Prompt.ask("Pilih opsi menu", choices=["1", "2", "0"], default="1")
+    console.print()
+
+    if main_choice == "0":
+        console.print("[yellow]Program dihentikan. Sampai jumpa![/yellow]")
+        return
+
+    if main_choice == "2":
+        panel_generator.run_panel_generator()
+        return
+
+    # Opsi 1: Ekstraksi dari Telegram
+    validate_credentials()
 
     session_target = config.SESSION_NAME
     if config.STRING_SESSION:
@@ -260,10 +281,11 @@ async def main():
     backup_session(client)
     me = await client.get_me()
 
+    console.clear()
     print_banner(account_name=me.first_name, total_saved=len(existing_urls))
 
-    # Menu Pilihan Target
-    console.print("[bold cyan]Pilih Target Ekstraksi:[/bold cyan]")
+    # Menu Pilihan Target Telegram
+    console.print("[bold cyan]Pilih Target Ekstraksi Telegram:[/bold cyan]")
     console.print("  [bold green]1.[/bold green] [bold]Semua 3 Target Sekaligus[/bold] (Firex + AnneBella + RizzxAura) [yellow](Default)[/yellow]")
     console.print("  [bold green]2.[/bold green] Hanya Channel [bold yellow]@RIZZxPANEL[/bold yellow] (rizzxaura.vercel.app)")
     console.print("  [bold green]3.[/bold green] Hanya Channel [bold yellow]@annebellapanel[/bold yellow] (annebellapanel.vercel.app)")

@@ -24,6 +24,12 @@ Telegram Scraper & Listener berbasis **Python (Telethon)** untuk mengekstrak lin
 - **Validasi Anti-Duplikat Ketat (Deduplikasi)**:
   - Link yang sudah ada di file output tidak akan pernah dimasukkan ulang.
   - Output diurutkan secara alfabetis (A-Z) setiap kali disimpan.
+- **Web Panel Generator (Fitur Baru)**:
+  - Mengonversi data database Firebase RTDB dan Auth Key menjadi URL Web Panel siap klik.
+  - Mendukung domain **FirexPanel**, **AnneBellaPanel**, dan **RizzxAura**.
+  - Mendukung format **Single Panel (`?s=`)** maupun **Multi Panel (`?m=`)**.
+  - Dapat langsung membaca file script (seperti `arxpays jio.py`), input manual, atau paste teks.
+  - Opsi sinkronisasi otomatis ke koleksi `extracted_links.txt` dan `extracted_links.json`.
 - **Keamanan Akun Berlapis (Anti-Ban & Anti-Flood)**:
   - Penyamaran identitas resmi Telegram Desktop Windows 10.
   - Pacing / jeda aman saat memindai pesan untuk menghindari pembatasan Telegram.
@@ -74,14 +80,27 @@ Jalankan script menggunakan terminal:
 ```
 *(atau klik dua kali file `start.bat` di Windows)*
 
-### Pilihan Menu:
+### Menu Utama:
 ```text
-Pilih Target Ekstraksi:
-  1. Semua 3 Target Sekaligus (Firex + AnneBella + RizzxAura) (Default)
-  2. Hanya Channel @RIZZxPANEL (rizzxaura.vercel.app)
-  3. Hanya Channel @annebellapanel (annebellapanel.vercel.app)
-  4. Hanya Grup FirexPanel (firexpanel.com)
+PILIH MENU UTAMA:
+  1. Ekstrak Link Panel dari Telegram (Scraper & Listener)
+  2. Buat / Generate Link Web Panel (dari File DB/Key atau Manual)
+  0. Keluar
 ```
+
+- **Jika memilih Menu 1 (Ekstraksi Telegram)**:
+  ```text
+  Pilih Target Ekstraksi Telegram:
+    1. Semua 3 Target Sekaligus (Firex + AnneBella + RizzxAura) (Default)
+    2. Hanya Channel @RIZZxPANEL (rizzxaura.vercel.app)
+    3. Hanya Channel @annebellapanel (annebellapanel.vercel.app)
+    4. Hanya Grup FirexPanel (firexpanel.com)
+  ```
+- **Jika memilih Menu 2 (Web Panel Generator)**:
+  - Membaca file `.py` / list panel (otomatis mendeteksi `arxpays jio.py` atau file lain).
+  - Memilih domain tujuan (`firexpanel.com`, `annebellapanel.vercel.app`, `rizzxaura.vercel.app`, atau semuanya).
+  - Memilih format Single (`?s=`) atau Multi (`?m=`).
+  - Menyimpan hasil ke `generated_panels.txt` serta opsi simpan langsung ke `extracted_links.txt`.
 
 ---
 
