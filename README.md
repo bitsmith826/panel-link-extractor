@@ -1,6 +1,6 @@
 # Telegram Panel Link Extractor
 
-Telegram Scraper & Listener berbasis **Python (Telethon)** untuk mengekstrak link panel secara otomatis dari channel / grup Telegram (seperti **FirexPanel** dan **AnneBellaPanel**), termasuk link yang tersembunyi di dalam tag spoiler, blockquote, maupun teks biasa tanpa format.
+Telegram Scraper & Listener berbasis **Python (Telethon)** untuk mengekstrak link panel secara otomatis dari channel / grup Telegram (seperti **FirexPanel**, **AnneBellaPanel**, dan **RizzxAura**), termasuk link yang tersembunyi di dalam tag spoiler, blockquote, inline buttons, maupun teks biasa tanpa format.
 
 ---
 
@@ -8,17 +8,22 @@ Telegram Scraper & Listener berbasis **Python (Telethon)** untuk mengekstrak lin
 
 - **Multi-Channel Targeted Scraper**:
   - Mengekstrak riwayat pesan dari channel / grup target spesifik.
-  - Mendukung grup privat (via link undangan `https://t.me/+...`) maupun channel publik (seperti `@annebellapanel`).
+  - Mendukung grup privat (via link undangan `https://t.me/+...`) maupun channel publik (seperti `@annebellapanel` dan `@RIZZxPANEL`).
+  - Target default:
+    1. **FirexPanel** (`https://firexpanel.com/...`)
+    2. **AnneBellaPanel** (`https://annebellapanel.vercel.app/...`)
+    3. **RizzxAura Panel** (`https://rizzxaura.vercel.app/...`)
 - **Ekstraksi Cerdas & Mendalam**:
   - Mengambil link dari format teks biasa (*unformatted plaintext*).
-  - Mengambil link dari teks tersembunyi (*spoiler formatting*).
-  - Mengambil link dari *blockquote* dan *hyperlink entities*.
+  - Mengambil link dari teks tersembunyi (*spoiler formatting* / `MessageEntitySpoiler`).
+  - Mengambil link dari *blockquote*, *inline buttons*, dan *hyperlink entities*.
 - **Normalisasi URL Otomatis**:
   - Memastikan seluruh link diawali dengan protokol `https://`.
-  - Memfilter dan membuang link kosong / tidak aktif (hanya mengambil link dengan path/parameter aktif).
+  - Menghapus prefix `www.` jika ada.
+  - Memfilter dan membuang link kosong / beranda (hanya mengambil link dengan path / parameter aktif).
 - **Validasi Anti-Duplikat Ketat (Deduplikasi)**:
   - Link yang sudah ada di file output tidak akan pernah dimasukkan ulang.
-  - Output diurutkan secara alfabetis (A-Z).
+  - Output diurutkan secara alfabetis (A-Z) setiap kali disimpan.
 - **Keamanan Akun Berlapis (Anti-Ban & Anti-Flood)**:
   - Penyamaran identitas resmi Telegram Desktop Windows 10.
   - Pacing / jeda aman saat memindai pesan untuk menghindari pembatasan Telegram.
@@ -37,7 +42,7 @@ Telegram Scraper & Listener berbasis **Python (Telethon)** untuk mengekstrak lin
 
 1. **Clone repository ini**:
    ```bash
-   git clone https://github.com/username-anda/panel-link-extractor.git
+   git clone https://github.com/bitsmith826/panel-link-extractor.git
    cd panel-link-extractor
    ```
 
@@ -72,9 +77,10 @@ Jalankan script menggunakan terminal:
 ### Pilihan Menu:
 ```text
 Pilih Target Ekstraksi:
-  1. Semua Target (FirexPanel + @annebellapanel) (Default)
-  2. Hanya Channel @annebellapanel
-  3. Hanya Grup FirexPanel
+  1. Semua 3 Target Sekaligus (Firex + AnneBella + RizzxAura) (Default)
+  2. Hanya Channel @RIZZxPANEL (rizzxaura.vercel.app)
+  3. Hanya Channel @annebellapanel (annebellapanel.vercel.app)
+  4. Hanya Grup FirexPanel (firexpanel.com)
 ```
 
 ---
@@ -88,6 +94,7 @@ https://annebellapanel.vercel.app/?m=W3sidXJsIjoiaHR0cHM6Ly...
 https://annebellapanel.vercel.app/?s=aHR0cHM6Ly93aGl0aGV4...
 https://firexpanel.com/?s=aHR0cHM6Ly9jYWxsbWV2aWxsZW4x...
 https://firexpanel.com/?s=aHR0cHM6Ly9yYW1hLWViOGNjLWRl...
+https://rizzxaura.vercel.app/?s=aHR0cHM6Ly9kaXNjb3Jk...
 ```
 
 ### 2. `extracted_links.json`
@@ -95,12 +102,12 @@ Menyimpan riwayat lengkap beserta metadata pesan (ID pesan, tanggal, nama grup, 
 ```json
 [
   {
-    "url": "https://firexpanel.com/?s=aHR0cHM6Ly...",
-    "chat_id": -1004324276248,
-    "chat_title": "PANNEL LOOTERSS { BACKUP }",
-    "message_id": 69,
-    "timestamp": "2026-09-30 07:16:33",
-    "snippet": "https://firexpanel.com/?s=..."
+    "url": "https://rizzxaura.vercel.app/?s=...",
+    "chat_id": -1002345678901,
+    "chat_title": "RIZZ'S PANNEL",
+    "message_id": 142,
+    "timestamp": "2026-10-01 10:35:12",
+    "snippet": "https://rizzxaura.vercel.app/?s=..."
   }
 ]
 ```
