@@ -41,6 +41,11 @@ TARGET_LIST = [
         "name": "AnneBellaPanel (@annebellapanel)",
         "target": "@annebellapanel",
         "prefix": "annebellapanel.vercel.app/"
+    },
+    {
+        "name": "RizzxAura Panel (@RIZZxPANEL)",
+        "target": "@RIZZxPANEL",
+        "prefix": "rizzxaura.vercel.app/"
     }
 ]
 
@@ -163,7 +168,7 @@ async def scrape_target(client: TelegramClient, target_info: dict, existing_urls
                 )
 
                 text = msg.raw_text or msg.text or ""
-                keyword_check = "annebellapanel" if "annebella" in target_prefix else "firexpanel"
+                keyword_check = "rizzxaura" if "rizzx" in target_prefix else ("annebellapanel" if "annebella" in target_prefix else "firexpanel")
                 if keyword_check not in text.lower():
                     has_entity_match = False
                     if msg.entities:
@@ -171,6 +176,12 @@ async def scrape_target(client: TelegramClient, target_info: dict, existing_urls
                             if hasattr(ent, 'url') and ent.url and keyword_check in ent.url.lower():
                                 has_entity_match = True
                                 break
+                    if not has_entity_match and getattr(msg, 'buttons', None):
+                        for row in msg.buttons:
+                            for btn in row:
+                                if getattr(btn, 'url', None) and keyword_check in btn.url.lower():
+                                    has_entity_match = True
+                                    break
                     if not has_entity_match:
                         continue
 
@@ -251,21 +262,24 @@ async def main():
 
     print_banner(account_name=me.first_name, total_saved=len(existing_urls))
 
-    # Menu Pilihan Target yang Ringkas & Jelas
+    # Menu Pilihan Target
     console.print("[bold cyan]Pilih Target Ekstraksi:[/bold cyan]")
-    console.print("  [bold green]1.[/bold green] Semua Target [bold](FirexPanel + @annebellapanel)[/bold] [yellow](Default)[/yellow]")
-    console.print("  [bold green]2.[/bold green] Hanya Channel [bold]@annebellapanel[/bold]")
-    console.print("  [bold green]3.[/bold green] Hanya Grup [bold]FirexPanel[/bold]\n")
+    console.print("  [bold green]1.[/bold green] [bold]Semua 3 Target Sekaligus[/bold] (Firex + AnneBella + RizzxAura) [yellow](Default)[/yellow]")
+    console.print("  [bold green]2.[/bold green] Hanya Channel [bold yellow]@RIZZxPANEL[/bold yellow] (rizzxaura.vercel.app)")
+    console.print("  [bold green]3.[/bold green] Hanya Channel [bold yellow]@annebellapanel[/bold yellow] (annebellapanel.vercel.app)")
+    console.print("  [bold green]4.[/bold green] Hanya Grup [bold yellow]FirexPanel[/bold yellow] (firexpanel.com)\n")
 
-    choice = Prompt.ask("Pilih opsi", choices=["1", "2", "3"], default="1")
+    choice = Prompt.ask("Pilih opsi", choices=["1", "2", "3", "4"], default="1")
     console.print()
 
     targets_to_run = []
     if choice == "1":
         targets_to_run = TARGET_LIST
     elif choice == "2":
-        targets_to_run = [TARGET_LIST[1]]
+        targets_to_run = [TARGET_LIST[2]]
     elif choice == "3":
+        targets_to_run = [TARGET_LIST[1]]
+    elif choice == "4":
         targets_to_run = [TARGET_LIST[0]]
 
     total_scanned = 0

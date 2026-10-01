@@ -14,6 +14,12 @@ ANNEBELLA_REGEX = re.compile(
     re.IGNORECASE
 )
 
+# Regex untuk rizzxaura.vercel.app
+RIZZXAURA_REGEX = re.compile(
+    r'(?:https?://)?(?:www\.)?rizzxaura\.vercel\.app/[^\s<>"\'`\(\)\[\]\{\}]+',
+    re.IGNORECASE
+)
+
 # Regex umum untuk semua URL
 GENERAL_URL_REGEX = re.compile(
     r'(?:https?://|www\.)[^\s<>"\'`\(\)\[\]\{\}]+|'
@@ -34,7 +40,7 @@ def normalize_panel_url(url: str, domain_target: str = None) -> str:
     Normalisasi URL:
     1. Pastikan diawali https://
     2. Hapus www.
-    3. Pastikan ada parameter/path setelah domain (bukan link kosong).
+    3. Pastikan ada parameter/path setelah domain (bukan link kosong / beranda).
     """
     cleaned = clean_url(url)
     if not cleaned:
@@ -69,17 +75,28 @@ def normalize_panel_url(url: str, domain_target: str = None) -> str:
             return ""
         return cleaned
 
+    # Validasi RizzxAuraPanel
+    if "rizzxaura.vercel.app" in cleaned.lower():
+        if cleaned in ("https://rizzxaura.vercel.app", "https://rizzxaura.vercel.app/"):
+            return ""
+        if not cleaned.startswith("https://rizzxaura.vercel.app/"):
+            return ""
+        suffix = cleaned[len("https://rizzxaura.vercel.app/"):].strip()
+        if not suffix:
+            return ""
+        return cleaned
+
     return cleaned if not domain_target else ""
 
 def extract_links_from_message(message, target_prefix: str = None) -> List[str]:
     """
     Mengekstrak dan menormalisasi URL dari pesan Telegram.
-    Mendukung teks biasa, teks tersembunyi (spoiler), blockquote, maupun hyperlink entities.
+    Mendukung teks biasa, teks tersembunyi (spoiler), blockquote, tombol inline, maupun hyperlink entities.
     """
     found_links: Set[str] = set()
     text = message.raw_text or message.text or ""
 
-    # 1. Ekstrak dari Entities (termasuk hyperlink terselubung)
+    # 1. Ekstrak dari Entities (hyperlink terselubung / markdown)
     if message.entities:
         for entity in message.entities:
             if isinstance(entity, MessageEntityTextUrl):
@@ -95,9 +112,19 @@ def extract_links_from_message(message, target_prefix: str = None) -> List[str]:
                 except Exception:
                     pass
 
-    # 2. Ekstrak langsung dengan Regex dari teks mentah (termasuk di dalam spoiler / blockquote)
+    # 2. Ekstrak dari Buttons / Reply Markup jika ada
+    if getattr(message, 'buttons', None):
+        for row in message.buttons:
+            for btn in row:
+                btn_url = getattr(btn, 'url', None)
+                if btn_url:
+                    found_links.add(clean_url(btn_url))
+
+    # 3. Ekstrak langsung dengan Regex dari teks mentah (mencakup teks dalam spoiler & blockquote)
     if text:
-        if target_prefix and "annebella" in target_prefix.lower():
+        if target_prefix and "rizzxaura" in target_prefix.lower():
+            matches = RIZZXAURA_REGEX.findall(text)
+        elif target_prefix and "annebella" in target_prefix.lower():
             matches = ANNEBELLA_REGEX.findall(text)
         elif target_prefix and "firex" in target_prefix.lower():
             matches = FIREXPANEL_REGEX.findall(text)
@@ -105,6 +132,7 @@ def extract_links_from_message(message, target_prefix: str = None) -> List[str]:
             matches = (
                 FIREXPANEL_REGEX.findall(text) +
                 ANNEBELLA_REGEX.findall(text) +
+                RIZZXAURA_REGEX.findall(text) +
                 GENERAL_URL_REGEX.findall(text)
             )
 
@@ -113,7 +141,7 @@ def extract_links_from_message(message, target_prefix: str = None) -> List[str]:
             if cleaned:
                 found_links.add(cleaned)
 
-    # 3. Normalisasi & Validasi Link
+    # 4. Normalisasi & Validasi Link
     normalized_results: Set[str] = set()
     for raw_url in found_links:
         valid_url = normalize_panel_url(raw_url, domain_target=target_prefix)
