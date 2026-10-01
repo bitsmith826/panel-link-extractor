@@ -3,6 +3,7 @@ import re
 import json
 import base64
 from pathlib import Path
+from datetime import datetime
 from typing import List, Tuple, Dict, Any
 
 from rich.console import Console
@@ -107,7 +108,7 @@ def parse_panels_from_file(file_path: str) -> List[Tuple[str, str]]:
     content = path.read_text(encoding="utf-8", errors="ignore")
     return parse_panels_from_text(content)
 
-def run_panel_generator():
+async def run_panel_generator():
     console.print(
         Panel(
             "[bold cyan]Web Panel Link Generator[/bold cyan]\n"
@@ -240,15 +241,23 @@ def run_panel_generator():
 
     # 7. Integrasi Opsional ke extracted_links.txt & JSON
     if Confirm.ask("\nTambahkan link ini ke koleksi utama (extracted_links.txt & .json)?", default=True):
-        saved_count = storage.save_extracted_links(
-            all_generated,
-            source_info={
-                "chat_id": 0,
-                "chat_title": "Panel Link Generator (Manual/File)",
-                "message_id": 0,
-                "snippet": f"Generated from {len(panels)} database panels"
-            }
-        )
-        console.print(f"[bold green]✓ +{saved_count} link baru berhasil ditambahkan dan disortir A-Z ke extracted_links.txt![/bold green]")
+        entries_to_save: List[Dict[str, Any]] = []
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        for link in all_generated:
+            if link not in storage.seen_urls:
+                entries_to_save.append({
+                    "url": link,
+                    "chat_id": 0,
+                    "chat_title": "Web Panel Generator",
+                    "message_id": 0,
+                    "timestamp": now_str,
+                    "snippet": f"Generated from {len(panels)} database panels"
+                })
+
+        if entries_to_save:
+            saved_entries = await storage.save_extracted_links(entries_to_save)
+            console.print(f"[bold green]✓ +{len(saved_entries)} link baru berhasil ditambahkan dan disortir A-Z ke extracted_links.txt![/bold green]")
+        else:
+            console.print("[yellow]Semua link yang di-generate sudah ada di koleksi (duplikat diabaikan).[/yellow]")
 
     console.print()

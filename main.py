@@ -252,7 +252,7 @@ async def main():
         return
 
     if main_choice == "2":
-        panel_generator.run_panel_generator()
+        await panel_generator.run_panel_generator()
         return
 
     # Opsi 1: Ekstraksi dari Telegram
